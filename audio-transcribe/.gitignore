@@ -1,0 +1,29 @@
+# === Eclipse ===
+.project
+.classpath
+.settings/
+
+# === Maven ===
+target/
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+*.log
+
+# === Environment Variables ===
+.env
+
+# === Docker ===
+# Ignore Docker-related output and intermediate files
+**/docker-compose.override.yml
+**/docker-compose*.log
+**/Dockerfile~
+
+# === IntelliJ IDEA (if used occasionally) ===
+.idea/
+*.iml
