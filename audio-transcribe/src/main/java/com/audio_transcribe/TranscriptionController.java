@@ -24,32 +24,28 @@ public class TranscriptionController {
 
     private final OpenAiAudioTranscriptionModel transcriptionModel;
 
-    public TranscriptionController(@Value("${spring.ai.openai.api-key}") String apiKey) {
-        OpenAiAudioApi openAiAudioApi = new OpenAiAudioApi(apiKey, null, null, null, null, null);
-        this.transcriptionModel = new OpenAiAudioTranscriptionModel(openAiAudioApi);
+    public TranscriptionController(OpenAiAudioTranscriptionModel transcriptionModel) {
+        this.transcriptionModel = transcriptionModel;
     }
 
     @PostMapping
-    public ResponseEntity <String> transcribeAudio (
-    		@RequestParam("file")MultipartFile file ) throws IOException {
-    	File tempFile = File.createTempFile ("audio", ".wav");
-    	file.transferTo(tempFile);
-    	
-    OpenAiAudioTranscriptionOptions	transcriptionOptions = OpenAiAudioTranscriptionOptions.builder()
-    		    .responseFormat(OpenAiAudioApi.TranscriptResponseFormat.TEXT)
-    		    .language("en")
-    		    .temperature(0f)
-    		    .build();
-    
-    var audioFile = new FileSystemResource(tempFile);
+    public ResponseEntity<String> transcribeAudio(@RequestParam("file") MultipartFile file) throws IOException {
+        File tempFile = File.createTempFile("audio", ".wav");
+        file.transferTo(tempFile);
 
-    AudioTranscriptionPrompt transcriptionRequest = new AudioTranscriptionPrompt(audioFile, transcriptionOptions);
-    AudioTranscriptionResponse response = transcriptionModel.call(transcriptionRequest);
-    	
-    tempFile.delete();
-    
-	return new ResponseEntity<>(response.getResult().getOutput(), HttpStatus.OK); 
-    	
+        var transcriptionOptions = OpenAiAudioTranscriptionOptions.builder()
+                .responseFormat(OpenAiAudioApi.TranscriptResponseFormat.TEXT)
+                .language("en")
+                .temperature(0f)
+                .build();
+
+        var audioFile = new FileSystemResource(tempFile);
+        var transcriptionRequest = new AudioTranscriptionPrompt(audioFile, transcriptionOptions);
+        var response = transcriptionModel.call(transcriptionRequest);
+
+        tempFile.delete();
+
+        return new ResponseEntity<>(response.getResult().getOutput(), HttpStatus.OK);
     }
-    
 }
+
